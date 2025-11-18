@@ -13,7 +13,7 @@ import {
   Heart
 } from 'lucide-react'
 import { Button } from '@/components/ui'
-import { CONTACT, LAWYER_INFO } from '@/lib/constants'
+import { CONTACT } from '@/lib/constants'
 import { getWhatsAppLink } from '@/lib/utils'
 
 export default function ContatoPage() {
@@ -88,7 +88,7 @@ export default function ContatoPage() {
                 </p>
                 
                 <Button
-                  size="xl"
+                  size="lg"
                   className="bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 mb-6"
                   leftIcon={<MessageCircle className="w-5 h-5" />}
                   onClick={() => window.open(getWhatsAppLink('Olá Dra. Flávia! Vim do site e gostaria de conversar sobre minha situação.'), '_blank')}
@@ -184,9 +184,6 @@ export default function ContatoPage() {
                       </p>
                       <p className="text-gray-600 text-sm">
                         {CONTACT.address.neighborhood} - {CONTACT.address.city}/{CONTACT.address.state}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        CEP: {CONTACT.address.zipCode}
                       </p>
                     </div>
                   </div>
@@ -290,11 +287,11 @@ export default function ContatoPage() {
               </div>
 
               <p className="text-sm text-gray-500 mt-6 italic">
-                "Entendo que momentos difíceis não escolhem dia ou hora. 
-                Por isso, me faço disponível quando você precisar."
+                &quot;Entendo que momentos difíceis não escolhem dia ou hora.
+                Por isso, me faço disponível quando você precisar.&quot;
               </p>
               <p className="text-sm text-gold-600 font-medium mt-2">
-                — Dra. Flávia Argolo
+                &mdash; Dra. Flávia Argolo
               </p>
             </div>
           </motion.div>
@@ -317,7 +314,7 @@ export default function ContatoPage() {
               Estou aqui para te ouvir, acolher e orientar. Vamos resolver isso juntos.
             </p>
             <Button
-              size="xl"
+              size="lg"
               leftIcon={<MessageCircle className="w-5 h-5" />}
               onClick={() => window.open(getWhatsAppLink('Olá Dra. Flávia! Quero agendar uma consulta.'), '_blank')}
             >
