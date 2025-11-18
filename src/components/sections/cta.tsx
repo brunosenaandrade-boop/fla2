@@ -46,7 +46,7 @@ export function CTASection() {
               leftIcon={<MessageCircle className="w-5 h-5" />}
               onClick={() =>
                 window.open(
-                  getWhatsAppLink(CONTACT.phone, WHATSAPP_MESSAGES.default),
+                  getWhatsAppLink(WHATSAPP_MESSAGES.default),
                   "_blank"
                 )
               }

@@ -13,18 +13,18 @@ export function formatPhoneNumber(phone: string): string {
   return phone;
 }
 
-export function getWhatsAppLink(
-  phone: string,
-  message?: string
-): string {
-  const cleanedPhone = phone.replace(/\D/g, "");
-  const baseUrl = `https://wa.me/55${cleanedPhone}`;
+export function getWhatsAppLink(message?: string): string {
+  // Default phone number from constants
+  const phone = "79999985695";
+  const baseUrl = `https://wa.me/55${phone}`;
 
   if (message) {
     return `${baseUrl}?text=${encodeURIComponent(message)}`;
   }
 
-  return baseUrl;
+  // Default message
+  const defaultMessage = "Olá Dra. Flávia! Vim do seu site e gostaria de agendar uma consulta. Meu nome é: ";
+  return `${baseUrl}?text=${encodeURIComponent(defaultMessage)}`;
 }
 
 export function scrollToSection(sectionId: string): void {
