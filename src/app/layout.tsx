@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Header, Footer } from "@/components/layout";
+import { Chatbot } from "@/components/chat";
 
 // Using system fonts for offline compatibility
 // In production, replace with DM_Sans from next/font/google
@@ -73,7 +75,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className={`${fontClass} min-h-screen flex flex-col`}>
-        {children}
+        <Header />
+        <div className="flex-1">
+          {children}
+        </div>
+        <Footer />
+        <Chatbot />
       </body>
     </html>
   );

@@ -112,7 +112,7 @@ export function Header() {
               <Button
                 size="sm"
                 leftIcon={<MessageCircle className="w-4 h-4" />}
-                onClick={() => window.open(getWhatsAppLink(CONTACT.phone, WHATSAPP_MESSAGES.default), "_blank")}
+                onClick={() => window.open(getWhatsAppLink(WHATSAPP_MESSAGES.default), "_blank")}
               >
                 WhatsApp
               </Button>
@@ -122,7 +122,7 @@ export function Header() {
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-3 lg:hidden">
             <a
-              href={getWhatsAppLink(CONTACT.phone, WHATSAPP_MESSAGES.default)}
+              href={getWhatsAppLink(WHATSAPP_MESSAGES.default)}
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 text-gold-600 hover:bg-gold-50 rounded-lg transition-colors"
@@ -204,7 +204,7 @@ export function Header() {
                   <Button
                     className="w-full mt-3"
                     leftIcon={<MessageCircle className="w-5 h-5" />}
-                    onClick={() => window.open(getWhatsAppLink(CONTACT.phone, WHATSAPP_MESSAGES.default), "_blank")}
+                    onClick={() => window.open(getWhatsAppLink(WHATSAPP_MESSAGES.default), "_blank")}
                   >
                     Falar no WhatsApp
                   </Button>
