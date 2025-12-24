@@ -2,19 +2,25 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Calendar, Clock, ArrowLeft, Tag, Share2, MessageCircle } from 'lucide-react'
-import { getBlogPostBySlug, getRelatedPosts, BlogPost } from '@/lib/supabase'
+import { getPostBySlug, getRelatedPosts, getAllPostSlugs, BlogPost } from '@/lib/blog'
 import { Breadcrumbs, Button } from '@/components/ui'
 import { BlogPostJsonLd } from '@/components/seo'
-import { SITE_CONFIG, CONTACT, WHATSAPP_MESSAGES } from '@/lib/constants'
+import { SITE_CONFIG, WHATSAPP_MESSAGES } from '@/lib/constants'
 import { getWhatsAppLink } from '@/lib/utils'
 
 interface Props {
   params: { slug: string }
 }
 
+// Generate static params for all posts
+export async function generateStaticParams() {
+  const slugs = getAllPostSlugs()
+  return slugs.map((slug) => ({ slug }))
+}
+
 // Generate metadata for the post
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { data: post } = await getBlogPostBySlug(params.slug)
+  const post = await getPostBySlug(params.slug)
 
   if (!post) {
     return {
@@ -22,26 +28,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  const title = post.meta_title || post.title
-  const description = post.meta_description || post.excerpt
+  const title = post.metaTitle || post.title
+  const description = post.metaDescription || post.excerpt
 
   return {
     title: `${title} | Blog`,
     description,
-    keywords: post.meta_keywords,
-    authors: [{ name: post.author_name }],
+    keywords: post.keywords,
+    authors: [{ name: post.author }],
     openGraph: {
       title,
       description,
       type: 'article',
       url: `${SITE_CONFIG.url}/blog/${post.slug}`,
-      publishedTime: post.published_at,
-      modifiedTime: post.updated_at,
-      authors: [post.author_name],
-      images: post.cover_image
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
+      authors: [post.author],
+      images: post.coverImage
         ? [
             {
-              url: post.cover_image,
+              url: post.coverImage,
               width: 1200,
               height: 630,
               alt: post.title,
@@ -53,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: post.cover_image ? [post.cover_image] : undefined,
+      images: post.coverImage ? [post.coverImage] : undefined,
     },
     alternates: {
       canonical: `${SITE_CONFIG.url}/blog/${post.slug}`,
@@ -76,10 +82,10 @@ function RelatedPostCard({ post }: { post: BlogPost }) {
   return (
     <Link href={`/blog/${post.slug}`} className="group">
       <article className="bg-white rounded-xl overflow-hidden shadow-soft hover:shadow-medium transition-shadow">
-        {post.cover_image && (
+        {post.coverImage && (
           <div className="aspect-video overflow-hidden">
             <img
-              src={post.cover_image}
+              src={post.coverImage}
               alt={post.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
@@ -90,7 +96,7 @@ function RelatedPostCard({ post }: { post: BlogPost }) {
             {post.title}
           </h3>
           <span className="text-sm text-gray-500">
-            {post.reading_time_minutes} min de leitura
+            {post.readingTime} min de leitura
           </span>
         </div>
       </article>
@@ -166,20 +172,15 @@ function AuthorCard() {
             pessoas em momentos difíceis com atendimento humanizado e soluções
             jurídicas efetivas.
           </p>
-          <Button
-            size="sm"
-            leftIcon={<MessageCircle className="w-4 h-4" />}
-            onClick={() => {}}
-            className="inline-flex"
+          <a
+            href={getWhatsAppLink(WHATSAPP_MESSAGES.default)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-gold-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-gold-600 transition-colors"
           >
-            <a
-              href={getWhatsAppLink(WHATSAPP_MESSAGES.default)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Falar no WhatsApp
-            </a>
-          </Button>
+            <MessageCircle className="w-4 h-4" />
+            Falar no WhatsApp
+          </a>
         </div>
       </div>
     </div>
@@ -187,13 +188,13 @@ function AuthorCard() {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { data: post } = await getBlogPostBySlug(params.slug)
+  const post = await getPostBySlug(params.slug)
 
   if (!post) {
     notFound()
   }
 
-  const relatedPosts = await getRelatedPosts(params.slug, post.category_id, 3)
+  const relatedPosts = await getRelatedPosts(params.slug, post.categorySlug, 3)
   const postUrl = `${SITE_CONFIG.url}/blog/${post.slug}`
 
   return (
@@ -202,10 +203,10 @@ export default async function BlogPostPage({ params }: Props) {
         title={post.title}
         description={post.excerpt}
         slug={post.slug}
-        publishedAt={post.published_at || post.created_at}
-        updatedAt={post.updated_at}
-        image={post.cover_image}
-        authorName={post.author_name}
+        publishedAt={post.publishedAt}
+        updatedAt={post.updatedAt || post.publishedAt}
+        image={post.coverImage}
+        authorName={post.author}
       />
 
       <main className="min-h-screen bg-gray-50">
@@ -215,28 +216,22 @@ export default async function BlogPostPage({ params }: Props) {
             <Breadcrumbs
               items={[
                 { label: 'Blog', href: '/blog' },
-                ...(post.category
-                  ? [
-                      {
-                        label: post.category.name,
-                        href: `/blog?categoria=${post.category.slug}`,
-                      },
-                    ]
-                  : []),
+                {
+                  label: post.category,
+                  href: `/blog?categoria=${post.categorySlug}`,
+                },
                 { label: post.title },
               ]}
             />
 
             <div className="max-w-3xl">
-              {post.category && (
-                <Link
-                  href={`/blog?categoria=${post.category.slug}`}
-                  className="inline-flex items-center gap-1 text-sm font-medium text-gold-600 bg-gold-100 px-4 py-1.5 rounded-full hover:bg-gold-200 transition-colors mb-4"
-                >
-                  <Tag className="w-4 h-4" />
-                  {post.category.name}
-                </Link>
-              )}
+              <Link
+                href={`/blog?categoria=${post.categorySlug}`}
+                className="inline-flex items-center gap-1 text-sm font-medium text-gold-600 bg-gold-100 px-4 py-1.5 rounded-full hover:bg-gold-200 transition-colors mb-4"
+              >
+                <Tag className="w-4 h-4" />
+                {post.category}
+              </Link>
 
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
                 {post.title}
@@ -246,18 +241,18 @@ export default async function BlogPostPage({ params }: Props) {
                 <span className="flex items-center gap-2">
                   <img
                     src="/images/dra-flavia-confiante.jpg"
-                    alt={post.author_name}
+                    alt={post.author}
                     className="w-8 h-8 rounded-full object-cover"
                   />
-                  {post.author_name}
+                  {post.author}
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  {formatDate(post.published_at || post.created_at)}
+                  {formatDate(post.publishedAt)}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  {post.reading_time_minutes} min de leitura
+                  {post.readingTime} min de leitura
                 </span>
               </div>
 
@@ -267,11 +262,11 @@ export default async function BlogPostPage({ params }: Props) {
         </section>
 
         {/* Cover Image */}
-        {post.cover_image && (
+        {post.coverImage && (
           <section className="container-custom -mt-4 mb-8">
             <div className="max-w-4xl mx-auto">
               <img
-                src={post.cover_image}
+                src={post.coverImage}
                 alt={post.title}
                 className="w-full aspect-video object-cover rounded-2xl shadow-medium"
               />
@@ -294,7 +289,7 @@ export default async function BlogPostPage({ params }: Props) {
                 prose-ul:my-4 prose-li:text-gray-700
                 prose-blockquote:border-l-gold-500 prose-blockquote:bg-gold-50 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
                 mb-12"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: post.contentHtml }}
             />
 
             {/* Share Section */}
@@ -325,7 +320,7 @@ export default async function BlogPostPage({ params }: Props) {
               </h2>
               <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 {relatedPosts.map((relatedPost) => (
-                  <RelatedPostCard key={relatedPost.id} post={relatedPost} />
+                  <RelatedPostCard key={relatedPost.slug} post={relatedPost} />
                 ))}
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react'
-import { getBlogPosts, getBlogCategories, BlogPost, BlogCategory } from '@/lib/supabase'
+import { getAllPosts, getAllCategories, BlogPost, BlogCategory } from '@/lib/blog'
 import { Breadcrumbs } from '@/components/ui'
 import { SITE_CONFIG } from '@/lib/constants'
 
@@ -43,25 +43,23 @@ function formatDate(dateString: string): string {
 function BlogPostCard({ post }: { post: BlogPost }) {
   return (
     <article className="bg-white rounded-2xl shadow-soft overflow-hidden hover:shadow-medium transition-shadow duration-300 group">
-      {post.cover_image && (
+      {post.coverImage && (
         <Link href={`/blog/${post.slug}`} className="block aspect-video overflow-hidden">
           <img
-            src={post.cover_image}
+            src={post.coverImage}
             alt={post.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </Link>
       )}
       <div className="p-6">
-        {post.category && (
-          <Link
-            href={`/blog?categoria=${post.category.slug}`}
-            className="inline-flex items-center gap-1 text-xs font-medium text-gold-600 bg-gold-50 px-3 py-1 rounded-full hover:bg-gold-100 transition-colors mb-3"
-          >
-            <Tag className="w-3 h-3" />
-            {post.category.name}
-          </Link>
-        )}
+        <Link
+          href={`/blog?categoria=${post.categorySlug}`}
+          className="inline-flex items-center gap-1 text-xs font-medium text-gold-600 bg-gold-50 px-3 py-1 rounded-full hover:bg-gold-100 transition-colors mb-3"
+        >
+          <Tag className="w-3 h-3" />
+          {post.category}
+        </Link>
 
         <Link href={`/blog/${post.slug}`}>
           <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-gold-600 transition-colors line-clamp-2">
@@ -75,11 +73,11 @@ function BlogPostCard({ post }: { post: BlogPost }) {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              {formatDate(post.published_at || post.created_at)}
+              {formatDate(post.publishedAt)}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
-              {post.reading_time_minutes} min
+              {post.readingTime} min
             </span>
           </div>
 
@@ -118,7 +116,7 @@ function CategoryFilter({
       </Link>
       {categories.map((category) => (
         <Link
-          key={category.id}
+          key={category.slug}
           href={`/blog?categoria=${category.slug}`}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
             activeSlug === category.slug
@@ -126,7 +124,7 @@ function CategoryFilter({
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >
-          {category.name}
+          {category.name} ({category.count})
         </Link>
       ))}
     </div>
@@ -173,25 +171,14 @@ function EmptyState() {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { categoria?: string; pagina?: string }
+  searchParams: { categoria?: string }
 }) {
   const categorySlug = searchParams.categoria
-  const page = parseInt(searchParams.pagina || '1', 10)
-  const postsPerPage = 9
 
-  const [postsResult, categoriesResult] = await Promise.all([
-    getBlogPosts({
-      limit: postsPerPage,
-      offset: (page - 1) * postsPerPage,
-      categorySlug,
-    }),
-    getBlogCategories(),
+  const [posts, categories] = await Promise.all([
+    getAllPosts({ category: categorySlug }),
+    getAllCategories(),
   ])
-
-  const posts = postsResult.data || []
-  const totalPosts = postsResult.count
-  const categories = categoriesResult.data || []
-  const totalPages = Math.ceil(totalPosts / postsPerPage)
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -223,50 +210,11 @@ export default async function BlogPage({
 
           {/* Posts Grid */}
           {posts.length > 0 ? (
-            <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {posts.map((post) => (
-                  <BlogPostCard key={post.id} post={post} />
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2">
-                  {page > 1 && (
-                    <Link
-                      href={`/blog?${categorySlug ? `categoria=${categorySlug}&` : ''}pagina=${page - 1}`}
-                      className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      Anterior
-                    </Link>
-                  )}
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                    <Link
-                      key={pageNum}
-                      href={`/blog?${categorySlug ? `categoria=${categorySlug}&` : ''}pagina=${pageNum}`}
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
-                        pageNum === page
-                          ? 'bg-gold-500 text-white'
-                          : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNum}
-                    </Link>
-                  ))}
-
-                  {page < totalPages && (
-                    <Link
-                      href={`/blog?${categorySlug ? `categoria=${categorySlug}&` : ''}pagina=${page + 1}`}
-                      className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      Próximo
-                    </Link>
-                  )}
-                </div>
-              )}
-            </>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map((post) => (
+                <BlogPostCard key={post.slug} post={post} />
+              ))}
+            </div>
           ) : (
             <EmptyState />
           )}

@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { getAllPosts } from '@/lib/blog'
 
 const baseUrl = 'https://www.flaviaargolo.adv.br'
 
@@ -17,28 +17,6 @@ const staticPages = [
   { url: '/inventario-partilha-bens', priority: 0.9, changeFrequency: 'weekly' as const },
 ]
 
-async function getBlogPosts(): Promise<{ slug: string; updated_at: string }[]> {
-  try {
-    const supabase = getSupabaseAdmin()
-    if (!supabase) return []
-
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('slug, updated_at')
-      .eq('published', true)
-      .order('updated_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching blog posts for sitemap:', error)
-      return []
-    }
-
-    return data || []
-  } catch {
-    return []
-  }
-}
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticEntries: MetadataRoute.Sitemap = staticPages.map((page) => ({
@@ -48,11 +26,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: page.priority,
   }))
 
-  // Dynamic blog posts
-  const blogPosts = await getBlogPosts()
-  const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+  // Dynamic blog posts from Markdown files
+  const posts = await getAllPosts()
+  const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.updated_at),
+    lastModified: new Date(post.updatedAt || post.publishedAt),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
