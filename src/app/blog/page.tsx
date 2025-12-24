@@ -5,6 +5,9 @@ import { getAllPosts, getAllCategories, BlogPost, BlogCategory } from '@/lib/blo
 import { Breadcrumbs } from '@/components/ui'
 import { SITE_CONFIG } from '@/lib/constants'
 
+// Force static generation
+export const dynamic = 'force-static'
+
 export const metadata: Metadata = {
   title: 'Blog | Dra. Flávia Argolo',
   description:
@@ -168,17 +171,14 @@ function EmptyState() {
   )
 }
 
-export default async function BlogPage({
-  searchParams,
-}: {
-  searchParams: { categoria?: string }
-}) {
-  const categorySlug = searchParams.categoria
-
+export default async function BlogPage() {
   const [posts, categories] = await Promise.all([
-    getAllPosts({ category: categorySlug }),
+    getAllPosts(),
     getAllCategories(),
   ])
+
+  // Category filtering is done client-side for static generation
+  const categorySlug = undefined
 
   return (
     <main className="min-h-screen bg-gray-50">
