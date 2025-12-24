@@ -3,7 +3,7 @@ export const SITE_CONFIG = {
   title: "Dra. Flávia Argolo | Advogada de Família em Aracaju",
   description:
     "Advogada especialista em Direito de Família com 24 anos de experiência em Aracaju/SE. Divórcio, pensão alimentícia, guarda de filhos e inventário com atendimento humanizado.",
-  url: "https://draflaviaargolo.adv.br",
+  url: "https://www.flaviaargolo.adv.br",
   ogImage: "/og-image.jpg",
 } as const;
 
@@ -113,8 +113,9 @@ export const WHATSAPP_MESSAGES = {
 export const NAV_LINKS = [
   { href: "/", label: "Início" },
   { href: "/#servicos", label: "Serviços" },
+  { href: "/blog", label: "Blog" },
   { href: "/quem-somos", label: "Quem Somos" },
-  { href: "/contato", label: "Contato" },
+  { href: "/#contato", label: "Contato" },
 ] as const;
 
 export const DIFFERENTIALS = [
