@@ -5,7 +5,8 @@ import { remark } from 'remark'
 import html from 'remark-html'
 import readingTime from 'reading-time'
 
-const postsDirectory = path.join(process.cwd(), 'src/content/blog')
+// Works in both local dev and Vercel production
+const postsDirectory = path.join(process.cwd(), 'src', 'content', 'blog')
 
 export interface BlogPost {
   slug: string
