@@ -4,6 +4,7 @@ excerpt: "Entenda o que é guarda compartilhada, como funciona no dia a dia, dif
 category: "guarda-filhos"
 author: "Dra. Flávia Argolo"
 publishedAt: "2026-01-04"
+coverImage: "/images/dra-flavia-confiante.jpg"
 featured: false
 metaTitle: "Guarda Compartilhada: Guia Completo - Como Funciona"
 metaDescription: "Saiba como funciona a guarda compartilhada na prática. Diferenças para guarda alternada, direitos dos pais e como solicitar."
