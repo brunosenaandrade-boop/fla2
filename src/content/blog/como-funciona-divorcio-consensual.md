@@ -3,10 +3,10 @@ title: "Como Funciona o Divórcio Consensual em Aracaju"
 excerpt: "Entenda o passo a passo do divórcio amigável, prazos, documentos necessários e como tornar esse processo mais simples e rápido."
 category: "divorcio"
 author: "Dra. Flávia Argolo"
-publishedAt: "2024-12-20"
+publishedAt: "2026-01-02"
 coverImage: "/images/dra-flavia-acolhedora.png"
 featured: true
-metaTitle: "Divórcio Consensual em Aracaju: Guia Completo 2024"
+metaTitle: "Divórcio Consensual em Aracaju: Guia Completo 2026"
 metaDescription: "Saiba como funciona o divórcio consensual em Aracaju. Prazos, documentos, custos e diferenças entre cartório e judicial. Guia atualizado."
 keywords:
   - divórcio consensual aracaju

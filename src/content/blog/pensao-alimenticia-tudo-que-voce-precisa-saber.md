@@ -3,10 +3,10 @@ title: "Pensão Alimentícia: Tudo Que Você Precisa Saber"
 excerpt: "Guia completo sobre pensão alimentícia: quem tem direito, como calcular, o que fazer quando atrasa e como pedir revisão."
 category: "pensao-alimenticia"
 author: "Dra. Flávia Argolo"
-publishedAt: "2024-12-15"
+publishedAt: "2026-01-03"
 coverImage: "/images/dra-flavia-proxima.png"
 featured: true
-metaTitle: "Pensão Alimentícia 2024: Guia Completo - Direitos e Deveres"
+metaTitle: "Pensão Alimentícia 2026: Guia Completo - Direitos e Deveres"
 metaDescription: "Tudo sobre pensão alimentícia: quem paga, como calcular, o que fazer com atraso, prisão civil e revisão de valores. Guia atualizado."
 keywords:
   - pensão alimentícia
